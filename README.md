@@ -21,8 +21,11 @@ configuration.
 
 ## Properties
 
-This plugin has no configuration properties. Unknown properties are rejected by
-the plugin schema.
+### `continue-on-error` (optional, boolean)
+
+Set to `true` to report cleanup errors without failing the cleanup step. Defaults
+to `false`. This only affects errors from this plugin; it does not turn a failed
+command or another hook into a success. Artifacts may remain when cleanup fails.
 
 ## Usage
 
@@ -48,6 +51,14 @@ the cleanup step's agent. The token must have both `read_artifacts` and
 The plugin lists all artifact pages before deleting anything, so deleting
 artifacts cannot shift later pagination pages and cause artifacts to be skipped.
 Any API, network, or malformed-response error fails the cleanup step.
+Set `continue-on-error: true` under the plugin configuration to make cleanup
+best-effort instead:
+
+```yaml
+    plugins:
+      - elastic/delete-build-artifacts#v0.1.0:
+          continue-on-error: true
+```
 
 ## Custom artifact storage
 
