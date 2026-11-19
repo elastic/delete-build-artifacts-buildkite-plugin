@@ -31,6 +31,10 @@ steps:
     key: e2e-delete
     command: "true"
     plugins:
+      - elastic/vault-secrets#v0.1.1:
+          path: "secret/ci/delete-build-artifacts-buildkite-plugin/buildkite"
+          field: "token"
+          env_var: "BUILDKITE_API_TOKEN"
       - elastic/delete-build-artifacts#${BUILDKITE_COMMIT}: {}
     agents:
       provider: gcp
@@ -40,6 +44,11 @@ steps:
     command: .buildkite/scripts/verify-artifacts-deleted.sh
     agents:
       provider: gcp
+    plugins:
+      - elastic/vault-secrets#v0.1.1:
+          path: "secret/ci/delete-build-artifacts-buildkite-plugin/buildkite"
+          field: "token"
+          env_var: "BUILDKITE_API_TOKEN"
 
 notify:
   - slack: "#observablt-bots"
