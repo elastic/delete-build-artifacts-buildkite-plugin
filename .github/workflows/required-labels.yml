@@ -1,0 +1,31 @@
+name: Required changelog label
+
+on:
+  merge_group:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  required-label:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v7
+      - id: labels
+        shell: bash
+        run: |
+          echo "labels=$(yq '[.categories[].labels] + .exclude-labels | flatten | unique | sort | @tsv' .github/release-drafter.yml)" >> "$GITHUB_OUTPUT"
+      - uses: mheap/github-action-required-labels@23e10fde7e062233401931a0eece796cd9bf3177 # v5.6.0
+        with:
+          mode: exactly
+          count: 1
+          labels: ${{ steps.labels.outputs.labels }}
+          use_regex: false
+          add_comment: false

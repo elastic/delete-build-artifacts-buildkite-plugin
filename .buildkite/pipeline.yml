@@ -1,0 +1,46 @@
+steps:
+  - label: ":test_tube: Unit Tests"
+    command: make test
+    agents:
+      provider: gcp
+
+  - label: ":test_tube: Integration Tests"
+    command: make integration-test
+    agents:
+      provider: gcp
+
+  - label: ":lint-roller: Plugin Lint"
+    command: make plugin-lint
+    agents:
+      provider: gcp
+
+  - label: ":shell: ShellCheck"
+    command: make shellcheck
+    agents:
+      provider: gcp
+
+  - label: ":arrow_up: E2E - Upload artifact"
+    key: e2e-upload
+    command: .buildkite/scripts/upload-artifact.sh
+    agents:
+      provider: gcp
+
+  - wait
+
+  - label: ":wastebasket: E2E - Delete artifacts"
+    key: e2e-delete
+    command: "true"
+    plugins:
+      - elastic/delete-build-artifacts#${BUILDKITE_COMMIT}: {}
+    agents:
+      provider: gcp
+
+  - label: ":mag: E2E - Verify deletion"
+    depends_on: e2e-delete
+    command: .buildkite/scripts/verify-artifacts-deleted.sh
+    agents:
+      provider: gcp
+
+notify:
+  - slack: "#observablt-bots"
+    if: build.branch == "main" && build.state == "failed"
