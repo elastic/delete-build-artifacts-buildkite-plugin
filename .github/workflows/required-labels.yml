@@ -21,7 +21,7 @@ jobs:
       - id: labels
         shell: bash
         run: |
-          echo "labels=$(yq '[.categories[].labels] + .exclude-labels | flatten | unique | sort | @tsv' .github/release-drafter.yml)" >> "$GITHUB_OUTPUT"
+          echo "labels=$(yq '[.categories[].labels] + .exclude-labels | flatten | unique | sort | join(",")' .github/release-drafter.yml)" >> "$GITHUB_OUTPUT"
       - uses: mheap/github-action-required-labels@23e10fde7e062233401931a0eece796cd9bf3177 # v5.6.0
         with:
           mode: exactly
