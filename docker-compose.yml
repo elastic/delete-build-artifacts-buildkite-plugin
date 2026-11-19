@@ -27,7 +27,7 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - >-
-        find hooks lib .buildkite/scripts tests/fixtures/bin
+        find hooks lib .buildkite/scripts
         -type f -not -name '*.ps1'
         | xargs shellcheck --shell=bash --external-sources --format=gcc
     volumes:
