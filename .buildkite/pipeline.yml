@@ -22,8 +22,6 @@ steps:
   - label: ":arrow_up: E2E - Upload artifact"
     key: e2e-upload
     command: .buildkite/scripts/upload-artifact.sh
-    agents:
-      provider: gcp
 
   - wait
 
