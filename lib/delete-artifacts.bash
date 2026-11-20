@@ -132,6 +132,7 @@ delete_build_artifacts_delete_all() {
 	local artifact_id
 	local body_file
 	local deleted=0
+	local failed=0
 	local job_id
 	local status
 	local url
@@ -143,7 +144,8 @@ delete_build_artifacts_delete_all() {
 		url="${api_url}/organizations/${BUILDKITE_ORGANIZATION_SLUG}/jobs/${job_id}/artifacts/${artifact_id}"
 
 		if ! status="$(delete_build_artifacts_request DELETE "${url}" "${body_file}")"; then
-			return 1
+			failed=$((failed + 1))
+			continue
 		fi
 
 		case "${status}" in
@@ -155,12 +157,17 @@ delete_build_artifacts_delete_all() {
 			;;
 		*)
 			delete_build_artifacts_error "deleting artifact ${artifact_id} returned HTTP ${status}: $(delete_build_artifacts_response_message "${body_file}")"
-			return 1
+			failed=$((failed + 1))
 			;;
 		esac
 	done <"${artifacts_file}"
 
 	echo "Deleted ${deleted} artifact(s)"
+
+	if ((failed != 0)); then
+		delete_build_artifacts_error "failed to delete ${failed} artifact(s)"
+		return 1
+	fi
 }
 
 delete_build_artifacts() {

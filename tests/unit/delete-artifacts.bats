@@ -91,14 +91,17 @@ stub_curl() {
 	unstub curl
 }
 
-@test "fails when an artifact cannot be deleted" {
+@test "continues deleting artifacts after a deletion fails" {
 	# arrange
 	local artifacts="${BATS_TEST_TMPDIR}/artifacts.json"
+	local empty_body="${BATS_TEST_TMPDIR}/empty"
 	local response="${BATS_TEST_TMPDIR}/response.json"
-	printf '[{"id":"artifact-1","job_id":"job-1"}]\n' >"${artifacts}"
+	printf '[{"id":"artifact-1","job_id":"job-1"},{"id":"artifact-2","job_id":"job-2"}]\n' >"${artifacts}"
+	: >"${empty_body}"
 	printf '{"message":"server error"}\n' >"${response}"
 	stub_curl "${artifacts}" 200
 	stub_curl "${response}" 500
+	stub_curl "${empty_body}" 204
 
 	# act
 	run bash -c 'source lib/delete-artifacts.bash; delete_build_artifacts'
@@ -106,6 +109,10 @@ stub_curl() {
 	# assert
 	assert_failure
 	assert_output --partial "deleting artifact artifact-1 returned HTTP 500: server error"
+	assert_output --partial "Deleted 1 artifact(s)"
+	assert_output --partial "failed to delete 1 artifact(s)"
+	[[ "$(grep -c '^DELETE ' "${CURL_LOG}")" -eq 2 ]]
+	grep -q '/organizations/elastic/jobs/job-2/artifacts/artifact-2' "${CURL_LOG}"
 	unstub curl
 }
 
