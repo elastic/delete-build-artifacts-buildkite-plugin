@@ -34,8 +34,6 @@ steps:
           field: "token"
           env_var: "BUILDKITE_API_TOKEN"
       - elastic/delete-build-artifacts#${BUILDKITE_COMMIT}: {}
-    agents:
-      provider: gcp
 
   - label: ":mag: E2E - Verify deletion"
     depends_on: e2e-delete
