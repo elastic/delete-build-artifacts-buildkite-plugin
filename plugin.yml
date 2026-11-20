@@ -1,0 +1,14 @@
+name: delete-build-artifacts
+description: Delete all artifacts belonging to the current Buildkite pipeline build
+author: https://github.com/elastic
+public: true
+requirements:
+  - bash
+  - curl
+  - jq
+configuration:
+  properties:
+    continue-on-error:
+      type: boolean
+      default: false
+  additionalProperties: false

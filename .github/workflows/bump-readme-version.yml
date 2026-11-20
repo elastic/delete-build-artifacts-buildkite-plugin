@@ -1,0 +1,42 @@
+name: Bump README plugin version
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  bump-readme-version:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Update README
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEW_VERSION="${GITHUB_REF#refs/tags/}"
+          BRANCH="update-version-${NEW_VERSION}"
+          sed -i "s|elastic/delete-build-artifacts#v[0-9]*\.[0-9]*\.[0-9]*|elastic/delete-build-artifacts#${NEW_VERSION}|g" README.md
+          if git diff --quiet -- README.md; then
+            echo "README already uses ${NEW_VERSION}"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "${BRANCH}"
+          git add README.md
+          git commit -m "docs: bump plugin version to ${NEW_VERSION} in README"
+          git push origin "${BRANCH}"
+          gh pr create \
+            --base main \
+            --head "${BRANCH}" \
+            --title "docs: bump plugin version to ${NEW_VERSION} in README" \
+            --body "Updates the README example to use ${NEW_VERSION}."
