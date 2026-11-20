@@ -41,7 +41,7 @@ steps:
   - label: ":wastebasket: Delete build artifacts"
     command: "true"
     plugins:
-      - elastic/delete-build-artifacts#v0.1.0: {}
+      - elastic/delete-build-artifacts#v0.0.1: {}
 ```
 
 Configure `BUILDKITE_API_TOKEN` as a protected environment variable or secret on
@@ -56,7 +56,7 @@ best-effort instead:
 
 ```yaml
     plugins:
-      - elastic/delete-build-artifacts#v0.1.0:
+      - elastic/delete-build-artifacts#v0.0.1:
           continue-on-error: true
 ```
 
