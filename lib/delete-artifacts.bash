@@ -111,8 +111,11 @@ delete_build_artifacts_collect() {
 			return 1
 		fi
 
-		jq -r '.[] | [.job_id, .id] | @tsv' "${body_file}" >>"${output_file}"
-		count="$(jq 'length' "${body_file}")"
+		if ! jq -r '.[] | [.job_id, .id] | @tsv' "${body_file}" >>"${output_file}"; then
+			delete_build_artifacts_error "could not save artifact list page ${page}"
+			return 1
+		fi
+		count="$(jq 'length' "${body_file}")" || return 1
 
 		if ((count < per_page)); then
 			break
