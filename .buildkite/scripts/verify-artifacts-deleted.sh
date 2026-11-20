@@ -10,7 +10,7 @@ set -euo pipefail
 url="https://api.buildkite.com/v2/organizations/${BUILDKITE_ORGANIZATION_SLUG}/pipelines/${BUILDKITE_PIPELINE_SLUG}/builds/${BUILDKITE_BUILD_NUMBER}/artifacts?per_page=1"
 remaining="$(
 	curl \
-		--fail-with-body \
+		--fail \
 		--silent \
 		--show-error \
 		--header "Authorization: Bearer ${BUILDKITE_API_TOKEN}" \
