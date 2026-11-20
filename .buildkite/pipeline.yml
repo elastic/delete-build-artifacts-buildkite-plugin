@@ -30,7 +30,7 @@ steps:
     command: "true"
     plugins:
       - elastic/vault-secrets#v0.1.1:
-          path: "secret/ci/delete-build-artifacts-buildkite-plugin/buildkite"
+          path: "secret/ci/elastic-delete-build-artifacts-buildkite-plugin/buildkite"
           field: "token"
           env_var: "BUILDKITE_API_TOKEN"
       - elastic/delete-build-artifacts#${BUILDKITE_COMMIT}: {}
@@ -44,7 +44,7 @@ steps:
       provider: gcp
     plugins:
       - elastic/vault-secrets#v0.1.1:
-          path: "secret/ci/delete-build-artifacts-buildkite-plugin/buildkite"
+          path: "secret/ci/elastic-delete-build-artifacts-buildkite-plugin/buildkite"
           field: "token"
           env_var: "BUILDKITE_API_TOKEN"
 
