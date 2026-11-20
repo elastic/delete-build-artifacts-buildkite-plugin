@@ -49,6 +49,18 @@ setup() {
 	unstub curl
 }
 
+@test "verification fails when an artifact remains on a later page" {
+	stub curl \
+		'jq -n "[range(100) | {state: \"deleted\"}]"' \
+		'printf "[{\"state\":\"active\"}]\n"'
+
+	run "${PWD}/.buildkite/scripts/verify-artifacts-deleted.sh"
+
+	assert_failure
+	assert_output --partial "Expected no artifacts after cleanup, found 1"
+	unstub curl
+}
+
 @test "verification fails when curl reports an HTTP or network error" {
 	for exit_code in 22 7; do
 		stub curl "printf '[]\n'; exit ${exit_code}"
