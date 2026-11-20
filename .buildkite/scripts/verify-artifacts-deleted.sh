@@ -16,7 +16,7 @@ remaining="$(
 		--header "Authorization: Bearer ${BUILDKITE_API_TOKEN}" \
 		--header "Accept: application/json" \
 		"${url}" |
-		jq 'length'
+		jq '[.[] | select(.state != "deleted")] | length'
 )"
 
 if ((remaining != 0)); then

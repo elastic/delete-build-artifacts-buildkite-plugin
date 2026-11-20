@@ -19,7 +19,27 @@ setup() {
 	unstub curl
 }
 
-@test "verification fails when artifacts remain" {
+@test "verification succeeds when all artifacts are marked deleted" {
+	stub curl 'printf "[{\"state\":\"deleted\"}]\n"'
+
+	run "${PWD}/.buildkite/scripts/verify-artifacts-deleted.sh"
+
+	assert_success
+	assert_output "No artifacts remain"
+	unstub curl
+}
+
+@test "verification fails when an artifact is not marked deleted" {
+	stub curl 'printf "[{\"state\":\"active\"}]\n"'
+
+	run "${PWD}/.buildkite/scripts/verify-artifacts-deleted.sh"
+
+	assert_failure
+	assert_output --partial "Expected no artifacts after cleanup, found 1"
+	unstub curl
+}
+
+@test "verification fails when an artifact is missing state" {
 	stub curl 'printf "[{}]\n"'
 
 	run "${PWD}/.buildkite/scripts/verify-artifacts-deleted.sh"
