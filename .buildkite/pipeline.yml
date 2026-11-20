@@ -38,8 +38,6 @@ steps:
   - label: ":mag: E2E - Verify deletion"
     depends_on: e2e-delete
     command: .buildkite/scripts/verify-artifacts-deleted.sh
-    agents:
-      provider: gcp
     plugins:
       - elastic/vault-secrets#v0.1.1:
           path: "secret/ci/elastic-delete-build-artifacts-buildkite-plugin/buildkite"
